@@ -1,13 +1,105 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* index.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root{
+  --bg: #0f1115;
+  --surface: #151922;
+  --text: #e6e8ee;
+  --muted: #9aa3b2;
+  --border: #222838;
+  --accent: #4ade80;
+  --accent-2: #22c55e;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+*{ box-sizing:border-box; }
+html, body, #root{ height:100%; }
+body{
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
+
+/* Navbar */
+.navbar-dark{
+  background: linear-gradient(180deg, #0f1115 0%, #0f1115cc 60%, transparent 100%);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--border);
+}
+.navbar-brand{
+  font-weight: 700;
+  letter-spacing:.5px;
+}
+.nav-link{ color: var(--muted) !important; }
+.nav-link.active, .nav-link:hover{ color: var(--text) !important; }
+
+/* Botones */
+.btn-accent{
+  background: var(--accent);
+  color:#0b0f14;
+  border: none;
+  font-weight: 600;
+  transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
+}
+.btn-accent:hover{
+  background: var(--accent-2);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px #22c55e33;
+}
+
+/* Cards */
+.card{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.card .form-control{
+  background: #0f1218;
+  border-color: #1f2430;
+  color: var(--text);
+}
+.card .form-control:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 .2rem #4ade8033;
+}
+
+/* Sección hero */
+.hero{
+  padding: clamp(48px, 8vw, 120px) 0 56px;
+  position: relative;
+  overflow: hidden;
+}
+.hero h1{
+  font-size: clamp(32px, 6vw, 56px);
+  line-height: 1.05;
+  letter-spacing: .2px;
+}
+.hero .lead{
+  color: var(--muted);
+  font-size: clamp(16px, 2.2vw, 20px);
+}
+.hero-glow{
+  position:absolute; inset:auto -20% -40% -20%;
+  height: 420px;
+  filter: blur(80px);
+  background: radial-gradient(closest-side, #4ade8033, transparent 70%);
+  pointer-events:none;
+}
+
+/* Listas/Features */
+.feature{
+  background: #121620;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* Footer */
+.footer{
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  padding: 24px 0;
+  margin-top: 48px;
+}
+
+/* Utilitarios */
+.text-muted-2{ color: var(--muted); }
