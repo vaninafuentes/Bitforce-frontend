@@ -1,0 +1,62 @@
+:root{
+  --bf-primary: #0d6efd;   /* Bootstrap primary */
+  --bf-dark: #1f2937;      /* gris oscuro para títulos */
+  --bf-muted: #6b7280;     /* gris texto secundario */
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: #f8fafc; /* gris muy clarito */
+}
+
+.bf-container-narrow {
+  max-width: 720px;
+}
+
+.bf-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(0,0,0,.06);
+}
+
+.bf-hero {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f7fb 100%);
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bf-hero h1 {
+  color: var(--bf-dark);
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.bf-muted {
+  color: var(--bf-muted);
+}
+
+/* inputs claros por defecto */
+.form-control,
+.form-select {
+  background-color: #fff !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--bf-primary) !important;
+  box-shadow: 0 0 0 .2rem rgba(13,110,253,.15) !important;
+}
+
+/* botón primario un poco más “pill” */
+.btn-primary {
+  border-radius: 999px;
+  padding: .6rem 1.25rem;
+}
+
+/* navbar clara */
+.navbar.bf-navbar {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #eef2f7;
+  box-shadow: 0 4px 14px rgba(0,0,0,.04);
+}
