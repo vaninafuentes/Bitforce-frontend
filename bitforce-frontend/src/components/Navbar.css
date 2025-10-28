@@ -1,0 +1,25 @@
+/* src/components/Navbar.css */
+.navbar{
+  font-weight: 600;
+}
+.navbar .nav-link{
+  color: var(--muted);
+}
+.navbar .nav-link.active{
+  color: var(--text);
+}
+.navbar .btn{
+  border-radius: 10px;
+}
+/* Asegurar que el dropdown quede por encima de todo */
+.navbar {
+  position: sticky;     /* se queda arriba al hacer scroll */
+  top: 0;
+  z-index: 1100 !important;   /* > 1020 de .sticky-top de Bootstrap */
+  overflow: visible !important;
+}
+
+.navbar .dropdown-menu {
+  z-index: 1200 !important;   /* aún más arriba que la navbar */
+  margin-top: .5rem;          /* separadito del botón */
+}

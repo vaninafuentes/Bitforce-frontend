@@ -1,92 +1,115 @@
-// src/pages/Register.js
+// src/pages/public/Register.js
 import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Auth } from "../../utils/api";
+import "./Login.css";
 
 export default function Register() {
-  const { register } = useAuth();
-  const nav = useNavigate();
-  const [form, setForm] = useState({ name: "", username: "", password: "" });
-  const [showPw, setShowPw] = useState(false);
-  const [error, setError] = useState("");
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [serverError, setServerError] = useState(null);
+  const [okMsg, setOkMsg] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
 
-  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const onChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setServerError(null);
+    setOkMsg(null);
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setServerError(null);
+    setOkMsg(null);
+    setLoading(true);
     try {
-      await register(form);
-      nav("/"); // o redirigir a /login si no hacés login automático
+      await Auth.publicRegister(form);
+      setOkMsg("¡Registro enviado! Cuando un administrador active tu cuenta, vas a poder iniciar sesión.");
+      setForm({ username: "", email: "", password: "" });
     } catch (err) {
-      setError(err.message || "No se pudo registrar");
+      const data = err?.response?.data;
+      let msg = "No se pudo registrar";
+      if (typeof data === "string") msg = data;
+      else if (data?.detail) msg = data.detail;
+      else if (data && typeof data === "object") {
+        const firstKey = Object.keys(data)[0];
+        if (firstKey) msg = `${firstKey}: ${Array.isArray(data[firstKey]) ? data[firstKey].join(", ") : data[firstKey]}`;
+      }
+      setServerError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container py-5">
+    <div className="container login-container py-5">
       <div className="row justify-content-center">
-        <div className="col-12 col-sm-10 col-md-8 col-lg-5">
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h1 className="h4 mb-3">Crear cuenta</h1>
-              {error && <div className="alert alert-danger">{error}</div>}
+        <div className="col-md-6 col-lg-5">
+          <div className="bf-card login-card p-4 p-md-5">
+            <h2 className="fw-bold mb-1">Crear cuenta</h2>
+            <p className="text-muted-2 mb-4">Registrate para empezar</p>
 
-              <form onSubmit={onSubmit}>
-                <div className="mb-3">
-                  <label className="form-label">Nombre</label>
+            {serverError && <div className="alert alert-danger py-2">{serverError}</div>}
+            {okMsg && <div className="alert alert-success py-2">{okMsg}</div>}
+
+            <form onSubmit={onSubmit} className="vstack gap-3">
+              <div>
+                <label className="form-label">Usuario</label>
+                <input
+                  name="username"
+                  value={form.username}
+                  onChange={onChange}
+                  className="form-control"
+                  placeholder="tu_usuario"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Email</label>
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={onChange}
+                  className="form-control"
+                  placeholder="tu@email.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Contraseña</label>
+                <div className="input-group">
                   <input
-                    className="form-control"
-                    name="name"
-                    value={form.name}
+                    type={show ? 'text' : 'password'}
+                    name="password"
+                    value={form.password}
                     onChange={onChange}
+                    className="form-control"
+                    placeholder="••••••••"
+                    autoComplete="new-password"
                     required
                   />
+                  <button
+                    type="button"
+                    className="btn btn-outline-light"
+                    onClick={() => setShow(s => !s)}
+                  >
+                    {show ? 'Ocultar' : 'Ver'}
+                  </button>
                 </div>
+              </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Usuario</label>
-                  <input
-                    className="form-control"
-                    name="username"
-                    value={form.username}
-                    onChange={onChange}
-                    autoComplete="username"
-                    required
-                  />
-                </div>
+              <button type="submit" className="btn btn-bf w-100 mt-2" disabled={loading}>
+                {loading ? 'Enviando…' : 'Registrarme'}
+              </button>
+            </form>
 
-                <div className="mb-3">
-                  <label className="form-label">Contraseña</label>
-                  <div className="input-group">
-                    <input
-                      className="form-control"
-                      type={showPw ? "text" : "password"}
-                      name="password"
-                      value={form.password}
-                      onChange={onChange}
-                      autoComplete="new-password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-outline-secondary"
-                      onClick={() => setShowPw((s) => !s)}
-                      aria-label={showPw ? "Ocultar contraseña" : "Mostrar contraseña"}
-                    >
-                      {showPw ? "🙈" : "👁️"}
-                    </button>
-                  </div>
-                </div>
-
-                <button className="btn btn-success w-100" type="submit">
-                  Crear cuenta
-                </button>
-              </form>
-
-              <p className="mt-3 mb-0">
-                ¿Ya tenés cuenta? <Link to="/login">Login</Link>
-              </p>
+            <div className="mt-4 text-center">
+              <small className="text-muted-2">
+                ¿Ya tenés cuenta? <Link to="/login">Ingresar</Link>
+              </small>
             </div>
           </div>
         </div>

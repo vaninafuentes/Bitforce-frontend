@@ -1,0 +1,57 @@
+/* Styles scoped to the register page to match the login layout */
+.register-container{
+  min-height: calc(100vh - 140px);
+  padding: 3.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-container > .row{
+  width: 100%;
+}
+
+.register-container .col-md-6.col-lg-5{
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.register-card{
+  width: 100%;
+  max-width: 520px;
+  margin: auto;
+  padding: 2.5rem !important;
+}
+
+/* Improve input contrast and placeholder visibility for register page */
+.register-container .form-control { background: rgba(11,18,36,0.86) !important; color: #fff !important; }
+.register-container .form-control::placeholder { color: rgba(226,232,240,0.62) !important; opacity: 1; }
+.register-container .form-control::-webkit-input-placeholder { color: rgba(226,232,240,0.62) !important; }
+.register-container .form-control:-ms-input-placeholder { color: rgba(226,232,240,0.62) !important; }
+
+@media (min-width: 992px){
+  .register-container{ padding-top: 6.5rem; padding-bottom: 6.5rem; }
+}
+
+.text-muted-2{ color: var(--bf-muted); }
+
+.register-container{
+  min-height: calc(100vh - 140px);
+  padding: 3.5rem 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.register-container > .row{ width: 100%; }
+.register-container .col-md-6.col-lg-5{ max-width: 520px; margin: 0 auto; }
+
+.register-card{
+  width: 100%; max-width: 520px; margin: auto; padding: 2.5rem !important;
+}
+.register-container .form-control{
+  background: rgba(11,18,36,0.86) !important; color: #fff !important;
+}
+.register-container .form-control::placeholder{
+  color: rgba(226,232,240,0.62) !important; opacity: 1;
+}
+@media (min-width: 992px){
+  .register-container{ padding-top: 6.5rem; padding-bottom: 6.5rem; }
+}
