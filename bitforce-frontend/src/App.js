@@ -25,7 +25,6 @@ import ClientCreditos from "./pages/client/Creditos";
 // Páginas Admin
 import AdminClientes from "./pages/admin/Clientes";
 import AdminClases from "./pages/admin/Clases";
-import AdminReservas from "./pages/admin/Reservas";
 import AdminActividades from "./pages/admin/Actividades";
 import AdminSucursales from "./pages/admin/Sucursales";
 import AdminCreditos from "./pages/admin/Creditos";
@@ -81,7 +80,6 @@ export default function App() {
           <Route index element={<Navigate to="clases" replace />} />
           <Route path="clases" element={<AdminClases />} />
           <Route path="clientes" element={<AdminClientes />} />
-          <Route path="reservas" element={<AdminReservas />} />
           <Route path="actividades" element={<AdminActividades />} />
           <Route path="sucursales" element={<AdminSucursales />} />
           <Route path="creditos" element={<AdminCreditos />} />

@@ -15,16 +15,10 @@ export default function AdminClientes() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [toDeleteId, setToDeleteId] = useState(null);
 
-  // modal: editar
-  const [showEdit, setShowEdit] = useState(false);
-  const [editUser, setEditUser] = useState(null); // {id, username, email}
-
   const load = async () => {
     setLoading(true);
     setErr("");
     try {
-      // Si tu backend soporta ?search= y/o filtros, podés mandarlos aquí:
-      // const list = await Users.list({ search: q });
       const list = await Users.list();
       setRows(Array.isArray(list) ? list : []);
     } catch (e) {
@@ -43,13 +37,11 @@ export default function AdminClientes() {
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return rows.filter((u) => {
-      // filtro por texto
       const okText =
         !needle ||
         (u.username || "").toLowerCase().includes(needle) ||
         (u.email || "").toLowerCase().includes(needle);
 
-      // filtro por estado
       const okStatus =
         status === "all" ||
         (status === "active" && !!u.is_active) ||
@@ -66,40 +58,6 @@ export default function AdminClientes() {
     } catch (e) {
       console.error(e);
       alert("No se pudo cambiar el estado");
-    }
-  };
-
-  // --- Editar ---
-  const openEdit = (u) => {
-    setEditUser({ id: u.id, username: u.username || "", email: u.email || "" });
-    setShowEdit(true);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeEdit = () => {
-    setShowEdit(false);
-    setEditUser(null);
-    document.body.style.overflow = "";
-  };
-
-  const saveEdit = async (e) => {
-    e.preventDefault();
-    if (!editUser?.id) return;
-    try {
-      await Users.update(editUser.id, {
-        username: String(editUser.username || "").trim(),
-        email: String(editUser.email || "").trim(),
-      });
-      closeEdit();
-      load();
-    } catch (e) {
-      console.error(e);
-      const msg =
-        e?.response?.data?.detail ||
-        e?.response?.data?.error ||
-        (typeof e?.response?.data === "string" ? e.response.data : null) ||
-        "Error guardando";
-      alert(msg);
     }
   };
 
@@ -202,7 +160,6 @@ export default function AdminClientes() {
                 </button>
               </td>
               <td className="actions">
-                <button onClick={() => openEdit(u)}>Editar</button>
                 <button className="danger" onClick={() => askDelete(u.id)}>
                   Borrar
                 </button>
@@ -255,62 +212,6 @@ export default function AdminClientes() {
         </>
       )}
 
-      {/* ===== Modal Editar Usuario ===== */}
-      {showEdit && (
-        <>
-          <div
-            className="modal-backdrop fade show"
-            style={{ zIndex: 1300 }}
-            onClick={closeEdit}
-          />
-          <div className="modal d-block" tabIndex="-1" role="dialog" style={{ zIndex: 1310 }}>
-            <div className="modal-dialog" role="document">
-              <div className="modal-content bg-dark text-light border-secondary">
-                <div className="modal-header">
-                  <h5 className="modal-title">Editar usuario</h5>
-                  <button
-                    type="button"
-                    className="btn-close btn-close-white"
-                    onClick={closeEdit}
-                  />
-                </div>
-                <form onSubmit={saveEdit}>
-                  <div className="modal-body vstack gap-2">
-                    <input
-                      className="edit-input"
-                      placeholder="Usuario"
-                      value={editUser?.username || ""}
-                      onChange={(e) =>
-                        setEditUser((s) => ({ ...s, username: e.target.value }))
-                      }
-                      required
-                    />
-                    <input
-                      className="edit-input"
-                      type="email"
-                      placeholder="Email"
-                      value={editUser?.email || ""}
-                      onChange={(e) =>
-                        setEditUser((s) => ({ ...s, email: e.target.value }))
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="modal-footer">
-                    <button type="button" className="btn btn-outline-light" onClick={closeEdit}>
-                      Cancelar
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      Guardar
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
       <style>{`
         .adm-toolbar{
           display:flex; gap:12px; align-items:center; margin:12px 0 16px;
@@ -336,13 +237,7 @@ export default function AdminClientes() {
 
         .adm-table{ width:100%; border-collapse:collapse; }
         .adm-table th, .adm-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.08); }
-        .actions button{ margin-right:8px; background:#a78bfa; color:#0b0b0b; border:none; border-radius:10px; padding:6px 10px; font-weight:700; }
-        .actions .danger{ background:#ef4444; color:#fff; }
-
-        .edit-input{
-          background:#121827; border:1px solid rgba(255,255,255,.08);
-          color:#e6edf3; border-radius:10px; padding:8px 10px;
-        }
+        .actions button{ margin-right:8px; background:#ef4444; color:#fff; border:none; border-radius:10px; padding:6px 10px; font-weight:700; }
       `}</style>
     </div>
   );
