@@ -1,4 +1,5 @@
 /* index.css */
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root{
@@ -19,18 +20,26 @@ body{
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* Navbar */
-.navbar-dark{
-  background: linear-gradient(180deg, #0f1115 0%, #0f1115cc 60%, transparent 100%);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid var(--border);
+/* Hacer que el footer quede al fondo */
+#root > div{
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
-.navbar-brand{
-  font-weight: 700;
-  letter-spacing:.5px;
+.app-main{ flex: 1; }
+
+/* (opcionales) helpers */
+.text-muted-2{ color: var(--muted); }
+
+/* Make the app root a column so footer can stick to bottom when content is short */
+body, #root > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
-.nav-link{ color: var(--muted) !important; }
-.nav-link.active, .nav-link:hover{ color: var(--text) !important; }
+
+.app-main{ flex: 1; }
+
 
 /* Botones */
 .btn-accent{
@@ -62,29 +71,6 @@ body{
   box-shadow: 0 0 0 .2rem #4ade8033;
 }
 
-/* Sección hero */
-.hero{
-  padding: clamp(48px, 8vw, 120px) 0 56px;
-  position: relative;
-  overflow: hidden;
-}
-.hero h1{
-  font-size: clamp(32px, 6vw, 56px);
-  line-height: 1.05;
-  letter-spacing: .2px;
-}
-.hero .lead{
-  color: var(--muted);
-  font-size: clamp(16px, 2.2vw, 20px);
-}
-.hero-glow{
-  position:absolute; inset:auto -20% -40% -20%;
-  height: 420px;
-  filter: blur(80px);
-  background: radial-gradient(closest-side, #4ade8033, transparent 70%);
-  pointer-events:none;
-}
-
 /* Listas/Features */
 .feature{
   background: #121620;
@@ -98,8 +84,26 @@ body{
   border-top: 1px solid var(--border);
   color: var(--muted);
   padding: 24px 0;
-  margin-top: 48px;
+  margin-top: 0;
+  /* allow footer to sit visually separated while flex layout keeps it at the bottom */
+  background: linear-gradient(180deg, transparent, rgba(11,12,20,0.25));
 }
 
 /* Utilitarios */
 .text-muted-2{ color: var(--muted); }
+
+/* --- Mantener el footer siempre al fondo --- */
+html, body, #root {
+  height: 100%;
+}
+
+#root > div {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1; /* El main ocupa todo el espacio disponible */
+}
+

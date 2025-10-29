@@ -1,0 +1,89 @@
+/* Contenedor y centrado (igual a Register) */
+.login-container{
+  min-height: calc(100vh - 140px);
+  padding: 3.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-container > .row{ width: 100%; }
+.login-container .col-md-6.col-lg-5{ max-width: 520px; margin: 0 auto; }
+@media (min-width: 992px){
+  .login-container{ padding-top: 6.5rem; padding-bottom: 6.5rem; }
+}
+
+/* Card igual a la de Register */
+.login-card{
+  width: 100%;
+  max-width: 520px;
+  margin: auto;
+  padding: 2.5rem !important;
+  background: rgba(15,23,42,0.6) !important;      /* translúcido */
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+}
+
+/* Inputs y placeholder (igual a Register) */
+.login-container .form-control{
+  background: rgba(11,18,36,0.86) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  height: 50px;
+  font-size: 1rem;
+}
+.login-container .form-control:focus{
+  background: rgba(11,18,36,0.95) !important;
+  border-color: var(--bf-primary) !important;
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.2);
+}
+.login-container .form-control::placeholder{ color: rgba(226,232,240,0.62) !important; opacity: 1; }
+.login-container .form-control::-webkit-input-placeholder{ color: rgba(226,232,240,0.62) !important; }
+.login-container .form-control:-ms-input-placeholder{ color: rgba(226,232,240,0.62) !important; }
+
+/* Botón ver/ocultar */
+.login-card .input-group .btn{
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+}
+.login-card .input-group .btn:hover{ background: rgba(255,255,255,0.12); }
+
+/* Tipografías auxiliares */
+.text-muted-2{ color: var(--bf-muted); }
+
+/* Mobile */
+@media (max-width: 992px){
+  .login-container{ padding: 0; }
+  .login-card{ margin: 1rem; padding: 1.5rem !important; }
+}
+
+/* ===== Fix visual SOLO en Login ===== */
+
+/* 1) Apagá el glow/texture global del <body> cuando existe el login */
+body:has(.login-container)::before {
+  display: none !important;
+}
+
+/* 2) Scrim inferior para cubrir cualquier residuo antes del footer */
+.login-container {
+  position: relative;
+  z-index: 0;
+}
+.login-container::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 90px;             /* ajustá 70–120px si hiciera falta */
+  background: #0b0f19;      /* mismo color base de tu fondo */
+  z-index: 5;               /* por encima del fondo, por debajo del footer */
+  pointer-events: none;
+}
+
+/* 3) En pantallas muy bajas, extendé un poco el scrim */
+@media (max-height: 750px) {
+  .login-container::after { height: 110px; }
+}

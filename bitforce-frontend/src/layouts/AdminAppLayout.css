@@ -1,0 +1,84 @@
+/* src/layouts/AdminAppLayout.css */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #0f0f0f;
+  color: #fff;
+}
+
+.admin-sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #1e1e1e 0%, #151515 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.4);
+  border-right: 1px solid #262626;
+}
+
+.admin-header {
+  margin-bottom: 1rem;
+}
+.admin-header h4 {
+  margin: 0;
+  font-weight: 700;
+  color: #a78bfa; /* violeta BitForce */
+}
+.admin-header .text-muted {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex-grow: 1;
+}
+
+.admin-nav a {
+  color: #e5e5e5;
+  text-decoration: none;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+.admin-nav a:hover {
+  background-color: #2d2d2d;
+  color: #fff;
+}
+.admin-nav a.active {
+  background-color: #a78bfa;
+  color: #0f0f0f;
+  font-weight: 700;
+}
+
+.admin-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #333;
+}
+
+.btn-logout {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.btn-logout:hover {
+  background-color: #dc2626;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 2rem;
+  background-color: #121212;
+}
