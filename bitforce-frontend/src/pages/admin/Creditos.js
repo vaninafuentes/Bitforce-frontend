@@ -1,4 +1,3 @@
-// src/pages/admin/Creditos.jsx
 import React, { useEffect, useState } from "react";
 import { Users } from "../../utils/api";
 
@@ -21,6 +20,7 @@ export default function AdminCreditos() {
   const [alertType, setAlertType] = useState("info");
   const [creditosById, setCreditosById] = useState({});
   const [diasById, setDiasById] = useState({});
+  const [sendingFor, setSendingFor] = useState(null); // id que está procesando
 
   useEffect(() => {
     loadUsuarios();
@@ -51,27 +51,43 @@ export default function AdminCreditos() {
 
     if (!creditos || creditos <= 0)
       return showAlert("Ingresá una cantidad de créditos válida (> 0).", "danger");
+    if (!dias || dias <= 0)
+      return showAlert("Ingresá una cantidad de días válida (> 0).", "danger");
 
     try {
-      await Users.customAction(id, "asignar_creditos", { creditos, dias });
+      setSendingFor(id);
+      await Users.asignarCreditos(id, creditos, dias);
       showAlert("Créditos asignados correctamente.", "success");
       setCreditosById((prev) => ({ ...prev, [id]: "" }));
       await loadUsuarios();
     } catch (e) {
       console.error(e);
-      showAlert("Error al asignar créditos.", "danger");
+      const msg =
+        e?.response?.data?.detail ||
+        e?.response?.data?.non_field_errors?.[0] ||
+        "Error al asignar créditos.";
+      showAlert(msg, "danger");
+    } finally {
+      setSendingFor(null);
     }
   };
 
   const resetearCreditos = async (id) => {
     try {
-      await Users.customAction(id, "resetear_creditos");
+      setSendingFor(id);
+      await Users.resetearCreditos(id);
       showAlert("Créditos reseteados correctamente.", "warning");
       setCreditosById((prev) => ({ ...prev, [id]: "" }));
       await loadUsuarios();
     } catch (e) {
       console.error(e);
-      showAlert("Error al resetear créditos.", "danger");
+      const msg =
+        e?.response?.data?.detail ||
+        e?.response?.data?.non_field_errors?.[0] ||
+        "Error al resetear créditos.";
+      showAlert(msg, "danger");
+    } finally {
+      setSendingFor(null);
     }
   };
 
@@ -124,59 +140,64 @@ export default function AdminCreditos() {
                 </td>
               </tr>
             ) : (
-              usuarios.map((u) => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.username}</td>
-                  <td>{u.email || "—"}</td>
-                  <td>{u.creditos ?? 0}</td>
-                  <td>{fmtDDMMYYYY(u.fecha_vencimiento)}</td>
-                  <td>
-                    {u.activo ? (
-                      <span className="text-success fw-semibold">Activo</span>
-                    ) : (
-                      <span className="text-danger fw-semibold">Inactivo</span>
-                    )}
-                  </td>
-                  <td className="text-end">
-                    <div className="d-inline-flex gap-2 align-items-center">
-                      <input
-                        type="number"
-                        min="1"
-                        value={creditosById[u.id] || ""}
-                        onChange={(e) =>
-                          onChangeCreditos(u.id, e.target.value)
-                        }
-                        className="form-control form-control-sm bg-dark text-light"
-                        style={{ width: 90 }}
-                        placeholder="Créditos"
-                      />
-                      <input
-                        type="number"
-                        min="1"
-                        value={diasById[u.id] || 30}
-                        onChange={(e) => onChangeDias(u.id, e.target.value)}
-                        className="form-control form-control-sm bg-dark text-light"
-                        style={{ width: 70 }}
-                        placeholder="Días"
-                        title="Días válidos"
-                      />
-                      <button
-                        className="btn btn-sm btn-success"
-                        onClick={() => asignarCreditos(u.id)}
-                      >
-                        Asignar
-                      </button>
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => resetearCreditos(u.id)}
-                      >
-                        Resetear
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+              usuarios.map((u) => {
+                const busy = sendingFor === u.id;
+                return (
+                  <tr key={u.id}>
+                    <td>{u.id}</td>
+                    <td>{u.username}</td>
+                    <td>{u.email || "—"}</td>
+                    <td>{u.creditos ?? 0}</td>
+                    <td>{fmtDDMMYYYY(u.fecha_vencimiento)}</td>
+                    <td>
+                      {u.activo ? (
+                        <span className="text-success fw-semibold">Activo</span>
+                      ) : (
+                        <span className="text-danger fw-semibold">Inactivo</span>
+                      )}
+                    </td>
+                    <td className="text-end">
+                      <div className="d-inline-flex gap-2 align-items-center">
+                        <input
+                          type="number"
+                          min="1"
+                          value={creditosById[u.id] || ""}
+                          onChange={(e) =>
+                            onChangeCreditos(u.id, e.target.value)
+                          }
+                          className="form-control form-control-sm bg-dark text-light"
+                          style={{ width: 90 }}
+                          placeholder="Créditos"
+                        />
+                        <input
+                          type="number"
+                          min="1"
+                          value={diasById[u.id] || 30}
+                          onChange={(e) => onChangeDias(u.id, e.target.value)}
+                          className="form-control form-control-sm bg-dark text-light"
+                          style={{ width: 70 }}
+                          placeholder="Días"
+                          title="Días válidos"
+                        />
+                        <button
+                          className="btn btn-sm btn-success"
+                          disabled={busy}
+                          onClick={() => asignarCreditos(u.id)}
+                        >
+                          {busy ? "..." : "Asignar"}
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          disabled={busy}
+                          onClick={() => resetearCreditos(u.id)}
+                        >
+                          {busy ? "..." : "Resetear"}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

@@ -183,7 +183,7 @@ export default function AdminClases() {
 
   const openReservas = async (r) => {
     try {
-      const data = await Reservas.list({ clase_id: r.id });
+      const data = await Reservas.list({ slot: r.id });
       setModal({
         open: true,
         title: `Reservas — Clase #${r.id}`,

@@ -1,114 +1,150 @@
-// src/pages/public/Register.js
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Auth } from "../../utils/api";
-import "./Login.css";
 
 export default function Register() {
+  const nav = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "" });
-  const [serverError, setServerError] = useState(null);
-  const [okMsg, setOkMsg] = useState(null);
+  const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [show, setShow] = useState(false);
+  const [msg, setMsg] = useState(null);
 
-  const onChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setServerError(null);
-    setOkMsg(null);
-  };
+  const onChange = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const onSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    setServerError(null);
-    setOkMsg(null);
-    setLoading(true);
+    setMsg(null);
+    if (!form.username || !form.email || !form.password) {
+      setMsg({ type: "danger", text: "Completá usuario, email y contraseña." });
+      return;
+    }
     try {
-      await Auth.publicRegister(form);
-      setOkMsg("¡Registro enviado! Cuando un administrador active tu cuenta, vas a poder iniciar sesión.");
-      setForm({ username: "", email: "", password: "" });
-    } catch (err) {
-      const data = err?.response?.data;
-      let msg = "No se pudo registrar";
-      if (typeof data === "string") msg = data;
-      else if (data?.detail) msg = data.detail;
-      else if (data && typeof data === "object") {
-        const firstKey = Object.keys(data)[0];
-        if (firstKey) msg = `${firstKey}: ${Array.isArray(data[firstKey]) ? data[firstKey].join(", ") : data[firstKey]}`;
-      }
-      setServerError(msg);
+      setLoading(true);
+      await Auth.publicRegister({
+        username: form.username.trim(),
+        email: form.email.trim(),
+        password: form.password,
+      });
+      setMsg({
+        type: "success",
+        text: "Cuenta creada. Un admin debe activarte antes de iniciar sesión.",
+      });
+      setTimeout(() => nav("/login"), 1200);
+    } catch (e) {
+      const data = e?.response?.data || {};
+      const firstError =
+        data?.detail ||
+        data?.non_field_errors?.[0] ||
+        data?.email?.[0] ||
+        data?.username?.[0] ||
+        data?.password?.[0] ||
+        "No se pudo crear la cuenta.";
+      setMsg({ type: "danger", text: firstError });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container login-container py-5">
-      <div className="row justify-content-center">
+    <div className="login-container">
+      <div className="row">
         <div className="col-md-6 col-lg-5">
-          <div className="bf-card login-card p-4 p-md-5">
-            <h2 className="fw-bold mb-1">Crear cuenta</h2>
-            <p className="text-muted-2 mb-4">Registrate para empezar</p>
+          <div className="login-card p-4">
+            <h1 className="h3 fw-semibold mb-2">Crear cuenta</h1>
+            <p className="text-muted mb-4">
+              Registrate para comenzar a usar Bitforce.
 
-            {serverError && <div className="alert alert-danger py-2">{serverError}</div>}
-            {okMsg && <div className="alert alert-success py-2">{okMsg}</div>}
+              
+            </p>
 
-            <form onSubmit={onSubmit} className="vstack gap-3">
+            {msg && (
+              <div className={`alert alert-${msg.type} py-2`}>{msg.text}</div>
+            )}
+
+            <form onSubmit={submit} className="vstack gap-3">
+              {/* Usuario */}
               <div>
-                <label className="form-label">Usuario</label>
+                <label className="form-label fw-semibold">Usuario</label>
                 <input
+                  className="form-control bg-dark text-light"
+                  placeholder="tu_usuario"
                   name="username"
                   value={form.username}
                   onChange={onChange}
-                  className="form-control"
-                  placeholder="tu_usuario"
-                  required
+                  autoComplete="username"
                 />
               </div>
 
+              {/* Email */}
               <div>
-                <label className="form-label">Email</label>
+                <label className="form-label fw-semibold">Email</label>
                 <input
-                  name="email"
                   type="email"
+                  className="form-control bg-dark text-light"
+                  placeholder="tu_email@gmail.com"
+                  name="email"
                   value={form.email}
                   onChange={onChange}
-                  className="form-control"
-                  placeholder="tu@email.com"
-                  required
+                  autoComplete="email"
                 />
               </div>
 
+              {/* Contraseña */}
               <div>
-                <label className="form-label">Contraseña</label>
+                <label className="form-label fw-semibold">Contraseña</label>
                 <div className="input-group">
                   <input
-                    type={show ? 'text' : 'password'}
+                    className="form-control bg-dark text-light"
+                    type={showPass ? "text" : "password"}
                     name="password"
+                    placeholder="••••••••"
                     value={form.password}
                     onChange={onChange}
-                    className="form-control"
-                    placeholder="••••••••"
                     autoComplete="new-password"
-                    required
                   />
                   <button
                     type="button"
                     className="btn btn-outline-light"
-                    onClick={() => setShow(s => !s)}
+                    onClick={() => setShowPass((s) => !s)}
+                    tabIndex={-1}
                   >
-                    {show ? 'Ocultar' : 'Ver'}
+                    {showPass ? "Ocultar" : "Ver"}
                   </button>
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-bf w-100 mt-2" disabled={loading}>
-                {loading ? 'Enviando…' : 'Registrarme'}
+              {/* Botón idéntico al login */}
+              <button
+                type="submit"
+                className="btn w-100 fw-semibold text-light"
+                disabled={loading}
+                style={{
+                  background: "linear-gradient(90deg, #7c3aed, #06b6d4)",
+                  border: "none",
+                  padding: "0.75rem",
+                  boxShadow: "0 0 12px rgba(124,58,237,0.4)",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    "0 0 18px rgba(124,58,237,0.7)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    "0 0 12px rgba(124,58,237,0.4)")
+                }
+              >
+                {loading ? "Creando…" : "Registrarme"}
               </button>
             </form>
 
-            <div className="mt-4 text-center">
-              <small className="text-muted-2">
-                ¿Ya tenés cuenta? <Link to="/login">Ingresar</Link>
+            <div className="text-center mt-3">
+              <small className="text-muted">
+                ¿Ya tenés cuenta?{" "}
+                <Link to="/login" className="text-decoration-none">
+                  Ingresá
+                </Link>
               </small>
             </div>
           </div>

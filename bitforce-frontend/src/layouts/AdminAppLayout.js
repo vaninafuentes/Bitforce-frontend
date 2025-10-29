@@ -36,9 +36,6 @@ export default function AdminAppLayout() {
                 <NavLink to="/admin/sucursales" className="list-group-item list-group-item-action bg-dark text-light border-secondary">
                   Sucursales
                 </NavLink>
-                <NavLink to="/admin/reservas" className="list-group-item list-group-item-action bg-dark text-light border-secondary">
-                  Reservas
-                </NavLink>
                 <NavLink to="/admin/clientes" className="list-group-item list-group-item-action bg-dark text-light border-secondary">
                   Clientes
                 </NavLink>
