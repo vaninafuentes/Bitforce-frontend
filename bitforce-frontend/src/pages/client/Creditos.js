@@ -1,5 +1,5 @@
 // src/pages/client/Creditos.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Auth, Reservas } from "../../utils/api";
 
 /* ===== Helpers ===== */
@@ -32,30 +32,38 @@ export default function CreditosCliente() {
     return { desde, hasta };
   }, [me]);
 
-  const estaDentroDelPeriodo = (iso) => {
-    if (!periodo) return false;
-    const t = new Date(iso);
-    return t >= periodo.desde && t <= periodo.hasta;
-  };
+  const estaDentroDelPeriodo = useCallback(
+    (iso) => {
+      if (!periodo) return false;
+      const t = new Date(iso);
+      return t >= periodo.desde && t <= periodo.hasta;
+    },
+    [periodo]
+  );
 
-  const contarUsados = async (perfil) => {
-    // Cuenta SOLO clases que ya ocurrieron dentro del período
-    let usadosCalc = 0;
-    if (perfil?.id && periodo) {
-      const all = await Reservas.list({ ordering: "-creado" });
-      const mias = (all || []).filter((b) => (b.user_info?.id ?? b.user) === perfil.id);
-      const ahora = new Date();
-      usadosCalc = mias.filter((b) => {
-        const ini = b.slot_info?.inicio;
-        if (!ini) return false;
-        const inicio = new Date(ini);
-        return inicio <= ahora && estaDentroDelPeriodo(inicio);
-      }).length;
-    }
-    setUsados(usadosCalc);
-  };
+  const contarUsados = useCallback(
+    async (perfil) => {
+      // Cuenta SOLO clases que ya ocurrieron dentro del período
+      let usadosCalc = 0;
+      if (perfil?.id && periodo) {
+        const all = await Reservas.list({ ordering: "-creado" });
+        const mias = (all || []).filter(
+          (b) => (b.user_info?.id ?? b.user) === perfil.id
+        );
+        const ahora = new Date();
+        usadosCalc = mias.filter((b) => {
+          const ini = b.slot_info?.inicio;
+          if (!ini) return false;
+          const inicio = new Date(ini);
+          return inicio <= ahora && estaDentroDelPeriodo(inicio);
+        }).length;
+      }
+      setUsados(usadosCalc);
+    },
+    [periodo, estaDentroDelPeriodo]
+  );
 
-  const cargar = async () => {
+  const cargar = useCallback(async () => {
     setMsg(null);
     setLoading(true);
     try {
@@ -68,19 +76,24 @@ export default function CreditosCliente() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [contarUsados]);
 
-  useEffect(() => { cargar(); }, []);
+  useEffect(() => {
+    cargar();
+  }, [cargar]);
 
   // Disponibles = créditos del perfil - usados (no bajamos por reservas futuras)
   const disponibles = clamp((me?.creditos ?? 0) - usados, 0, 9999);
-  const vencido = me?.fecha_vencimiento && new Date(me.fecha_vencimiento) < new Date();
+  const vencido =
+    me?.fecha_vencimiento && new Date(me.fecha_vencimiento) < new Date();
 
   return (
     <div>
       <div className="d-flex align-items-end justify-content-between mb-3">
         <h2 className="text-light mb-0">Mis créditos</h2>
-        <button className="btn btn-outline-light" onClick={cargar}>Actualizar</button>
+        <button className="btn btn-outline-light" onClick={cargar}>
+          Actualizar
+        </button>
       </div>
 
       {msg && <div className={`alert alert-${msg.type}`}>{msg.text}</div>}
@@ -118,7 +131,9 @@ export default function CreditosCliente() {
             </div>
             <div className="col-12 col-md-4">
               <div className="text-muted">Vencimiento</div>
-              <div className="fw-semibold">{ddmmyyyy(me?.fecha_vencimiento)}</div>
+              <div className="fw-semibold">
+                {ddmmyyyy(me?.fecha_vencimiento)}
+              </div>
             </div>
             <div className="col-12 col-md-4">
               <div className="text-muted">Estado</div>
