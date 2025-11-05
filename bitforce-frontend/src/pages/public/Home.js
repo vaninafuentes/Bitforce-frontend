@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 
@@ -66,22 +66,25 @@ function Carousel({ images = [], interval = 4000, aspect = "16/9" }) {
   const [paused, setPaused] = React.useState(false);
   const touch = React.useRef({ x: 0, y: 0 });
 
-  const go = (dir) => setIndex((i) => (i + dir + images.length) % images.length);
+  const go = useCallback(
+    (dir) => setIndex((i) => (i + dir + images.length) % images.length),
+    [images.length]
+  );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (paused || images.length <= 1) return;
     const id = setInterval(() => setIndex((i) => (i + 1) % images.length), interval);
     return () => clearInterval(id);
   }, [paused, images.length, interval]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const onKey = (e) => {
       if (e.key === "ArrowRight") go(1);
       if (e.key === "ArrowLeft") go(-1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [go]);
 
   const onTouchStart = (e) => {
     const t = e.touches[0];
@@ -235,35 +238,34 @@ export default function Home() {
       </section>
 
       {/* ===== SOBRE NOSOTROS ===== */}
-<section
-  className="bf-about bf-section"
-  aria-labelledby="about-title"
-  style={{ paddingTop: "0,5rem" }}  // <- subí el valor si querés más separación
->
-  <div className="container text-center">
-    <h2 id="about-title" className="fw-bold mb-3">
-      BitForce Gym
-    </h2>
-    <p className="lead bf-text-soft mx-auto">
-      Somos un centro de entrenamiento integral. Clases guiadas por
-      coaches certificados, seguimiento real de tu progreso y una
-      comunidad que te empuja a dar tu mejor versión.
-    </p>
-  </div>
-</section>
-
+      <section
+        className="bf-about bf-section"
+        aria-labelledby="about-title"
+        style={{ paddingTop: "0.5rem" }}  // <- subí el valor si querés más separación
+      >
+        <div className="container text-center">
+          <h2 id="about-title" className="fw-bold mb-3">
+            BitForce Gym
+          </h2>
+          <p className="lead bf-text-soft mx-auto">
+            Somos un centro de entrenamiento integral. Clases guiadas por
+            coaches certificados, seguimiento real de tu progreso y una
+            comunidad que te empuja a dar tu mejor versión.
+          </p>
+        </div>
+      </section>
 
       {/* ===== CLASES / ACTIVIDADES ===== */}
       <section className="bf-classes bf-section" aria-labelledby="classes-title">
         <div className="container">
           <div className="text-center mb-5">
-  <h2 id="classes-title" className="fw-bold mb-2 gradient-text">
-    Nuestras clases
-  </h2>
-  <p className="bf-text-soft">
-    Descubrí las experiencias de entrenamiento que te van a transformar.
-  </p>
-</div>
+            <h2 id="classes-title" className="fw-bold mb-2 gradient-text">
+              Nuestras clases
+            </h2>
+            <p className="bf-text-soft">
+              Descubrí las experiencias de entrenamiento que te van a transformar.
+            </p>
+          </div>
 
           <div className="row g-4">
             {[
@@ -420,21 +422,21 @@ export default function Home() {
           <div className="bf-faq-list">
             <details className="bf-faq-item">
               <summary>
-                <span className="bf-faq-icon" aria-hidden>?</span>
+                <span className="bf-faq-icon" aria-hidden="true">?</span>
                 ¿Necesito experiencia previa?
               </summary>
               <p>No, adaptamos cargas y progresiones a tu nivel actual.</p>
             </details>
             <details className="bf-faq-item">
               <summary>
-                <span className="bf-faq-icon" aria-hidden>?</span>
+                <span className="bf-faq-icon" aria-hidden="true">?</span>
                 ¿Puedo probar una clase?
               </summary>
               <p>Sí, registrate y coordinamos tu clase de prueba.</p>
             </details>
             <details className="bf-faq-item">
               <summary>
-                <span className="bf-faq-icon" aria-hidden>?</span>
+                <span className="bf-faq-icon" aria-hidden="true">?</span>
                 ¿Trabajan con objetivos específicos?
               </summary>
               <p>Fuerza, recomposición corporal, movilidad, rendimiento y más.</p>

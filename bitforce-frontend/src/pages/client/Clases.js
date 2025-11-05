@@ -1,5 +1,5 @@
 // src/pages/client/Clases.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Auth, Branch, Actividades, Clases as ClasesApi, Reservas } from "../../utils/api";
 
 /* ========= Helpers ========= */
@@ -39,9 +39,6 @@ const beforeCutoff = (slot) => {
   const limite = new Date(inicio.getTime() - cutoffMin * 60 * 1000);
   return new Date() < limite;
 };
-
-// ya empezó (ocultamos si es true)
-const isStarted = (slot) => new Date(slot.inicio) <= new Date();
 
 // solape [a,b) y [c,d)
 const overlaps = (aStart, aEnd, bStart, bEnd) =>
@@ -110,8 +107,8 @@ export default function Clases() {
     })();
   }, []);
 
-  // cargar slots + mis reservas con filtro robusto
-  const loadSlots = async () => {
+  // cargar slots + mis reservas (memoizado)
+  const loadSlots = useCallback(async () => {
     setLoading(true);
     setAlerta(null);
     try {
@@ -149,19 +146,19 @@ export default function Clases() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [actividadId, fecha, me?.id, sucursalId]);
 
   useEffect(() => {
     if (me) loadSlots();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [me, fecha, sucursalId, actividadId]);
+  }, [me, loadSlots]);
 
   // 🔄 auto-refresh cada 60s para que una clase “desaparezca” al alcanzar su hora de inicio
   useEffect(() => {
-    const id = setInterval(loadSlots, 60000);
+    const id = setInterval(() => {
+      loadSlots();
+    }, 60000);
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fecha, sucursalId, actividadId]);
+  }, [loadSlots]);
 
   const reservar = async (slot) => {
     try {

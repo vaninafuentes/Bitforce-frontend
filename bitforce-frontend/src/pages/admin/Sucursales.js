@@ -1,5 +1,5 @@
 // src/pages/admin/Sucursales.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Branch as BranchApi } from "../../utils/api";
 
 /* Modal liviano para confirmar borrado */
@@ -43,16 +43,19 @@ export default function SucursalesAdmin() {
   // Modal borrar
   const [modal, setModal] = useState({ open: false, id: null, texto: "" });
 
-  const ordenar = (arr) =>
-    (arr || []).slice().sort((a, b) => {
-      const n = String(a.nombre).localeCompare(String(b.nombre), "es", { sensitivity: "base" });
-      if (n !== 0) return n;
-      return String(a.direccion).localeCompare(String(b.direccion), "es", { sensitivity: "base" });
-    });
+  const ordenar = useCallback(
+    (arr) =>
+      (arr || []).slice().sort((a, b) => {
+        const n = String(a.nombre).localeCompare(String(b.nombre), "es", { sensitivity: "base" });
+        if (n !== 0) return n;
+        return String(a.direccion).localeCompare(String(b.direccion), "es", { sensitivity: "base" });
+      }),
+    []
+  );
 
   const norm = (s) => String(s || "").trim().replace(/\s+/g, " ").toLowerCase();
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
       setAlerta("");
@@ -64,11 +67,11 @@ export default function SucursalesAdmin() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [ordenar]);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   /* Crear */
   const onCreate = async () => {

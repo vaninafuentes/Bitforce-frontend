@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Users } from "../../utils/api";
 
 const fmtDDMMYYYY = (iso) => {
@@ -22,11 +22,13 @@ export default function AdminCreditos() {
   const [diasById, setDiasById] = useState({});
   const [sendingFor, setSendingFor] = useState(null); // id que está procesando
 
-  useEffect(() => {
-    loadUsuarios();
+  const showAlert = useCallback((msg, type = "info") => {
+    setAlert(msg);
+    setAlertType(type);
+    setTimeout(() => setAlert(null), 3500);
   }, []);
 
-  const loadUsuarios = async () => {
+  const loadUsuarios = useCallback(async () => {
     try {
       setLoading(true);
       const data = await Users.list();
@@ -37,13 +39,11 @@ export default function AdminCreditos() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showAlert]);
 
-  const showAlert = (msg, type = "info") => {
-    setAlert(msg);
-    setAlertType(type);
-    setTimeout(() => setAlert(null), 3500);
-  };
+  useEffect(() => {
+    loadUsuarios();
+  }, [loadUsuarios]);
 
   const asignarCreditos = async (id) => {
     const creditos = Number(creditosById[id]);
